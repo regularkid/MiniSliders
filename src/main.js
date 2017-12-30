@@ -9,7 +9,5 @@ function onLoadComplete()
 {
     g.canvas.style.backgroundColor = "gray";
 
-    drawPuzzle();
-
     setState_Intro();
 }
