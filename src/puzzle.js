@@ -55,6 +55,8 @@ function createPuzzle()
         }
     }
 
+    shufflePuzzle();
+
     g.pointer.press = onPuzzlePress;
     g.pointer.release = onPuzzleRelease;
 }
@@ -207,4 +209,25 @@ function checkIfSolved()
 
     console.log("Solved!");
     return true;
+}
+
+function shufflePuzzle()
+{
+    puzzle.rows.forEach(function(puzzleRow)
+    {
+        setRowIndex(puzzleRow, Math.floor(Math.random() * (puzzle.numRows - 1)));
+
+        var randomShiftAmount = Math.floor(Math.random() * (puzzle.numCols - 1));
+        for (var i = 0; i < randomShiftAmount; i++)
+        {
+            shiftRowRight(puzzleRow);
+        }
+    });
+
+    puzzle.rows.forEach(function(puzzleRow)
+    {
+        desiredPos = getDesiredRowPos(puzzleRow.rowIndex);
+        puzzleRow.x = desiredPos.x;
+        puzzleRow.y = desiredPos.y;
+    });
 }
