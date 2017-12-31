@@ -13,21 +13,18 @@ var testPuzzle =
 ];
 
 var puzzle;
-var desiredPuzzleSize;
-var spacing;
 
 function createPuzzle()
 {
-    desiredPuzzleSize = g.canvas.width * 0.66;
-    spacing = 2;
-
     puzzle = g.group();
+    puzzle.desiredPuzzleSize = g.canvas.width * 0.66;
+    puzzle.spacing = 2;
     puzzle.tileArray = testPuzzle;
     puzzle.numRows = puzzle.tileArray.length;
     puzzle.numCols = puzzle.tileArray[0].length;
-    puzzle.tileSize = puzzle.numRows > puzzle.numCols ? desiredPuzzleSize / puzzle.numRows : desiredPuzzleSize / puzzle.numCols;
-    puzzle.xSize = (puzzle.numCols * puzzle.tileSize) + ((puzzle.numCols - 1) * spacing);
-    puzzle.ySize = (puzzle.numRows * puzzle.tileSize) + ((puzzle.numRows - 1) * spacing);
+    puzzle.tileSize = puzzle.numRows > puzzle.numCols ? puzzle.desiredPuzzleSize / puzzle.numRows : puzzle.desiredPuzzleSize / puzzle.numCols;
+    puzzle.xSize = (puzzle.numCols * puzzle.tileSize) + ((puzzle.numCols - 1) * puzzle.spacing);
+    puzzle.ySize = (puzzle.numRows * puzzle.tileSize) + ((puzzle.numRows - 1) * puzzle.spacing);
     puzzle.x = (g.canvas.width - puzzle.xSize) / 2;
     puzzle.y = (g.canvas.height - puzzle.ySize) / 2;
     puzzle.rows = [];
@@ -36,22 +33,23 @@ function createPuzzle()
     {
         var puzzleRow = g.group();
         puzzleRow.x = 0;
-        puzzleRow.y = rowIndex * (puzzle.tileSize + spacing);
+        puzzleRow.y = rowIndex * (puzzle.tileSize + puzzle.spacing);
         puzzleRow.isAttachedToMouse = false;
         puzzleRow.rowIndex = rowIndex;
-        puzzleRow.ySize = puzzle.tileSize + spacing;
+        puzzleRow.ySize = puzzle.tileSize + puzzle.spacing;
         puzzleRow.tiles = [];
         puzzle.rows[rowIndex] = puzzleRow;
         puzzle.addChild(puzzleRow);
 
         for (var colIndex = 0; colIndex < puzzle.numCols; colIndex++)
         {
-            var tile = puzzle.tileArray[rowIndex][colIndex];
-            var color = tile != 0 ? "black" : "white";
-            var x =colIndex * (puzzle.tileSize + spacing);
+            var tileValue = puzzle.tileArray[rowIndex][colIndex];
+            var color = tileValue != 0 ? "black" : "white";
+            var x = colIndex * (puzzle.tileSize + puzzle.spacing);
             var y = 0;
 
             var tile = g.rectangle(puzzle.tileSize, puzzle.tileSize, color, "white", 0, x, y);
+            tile.tileValue = tileValue;
             puzzleRow.tiles[colIndex] = tile;
             puzzleRow.addChild(tile);
         }
@@ -75,6 +73,31 @@ function updatePuzzle()
             {
                 setRowIndex(puzzleRow, desiredRowIndex);
             }
+            
+            if (puzzleRow.x < -puzzle.tileSize*0.5)
+            {                
+                puzzleRow.tiles[0].x += (puzzle.tileSize + puzzle.spacing) * (puzzle.numCols - 1);
+                for (var colIndex = 1; colIndex < puzzleRow.tiles.length; colIndex++)
+                {
+                    puzzleRow.tiles[colIndex].x -= (puzzle.tileSize + puzzle.spacing);
+                }
+                puzzleRow.tiles.sort((a, b) => a.x - b.x);
+
+                puzzleRow.x += puzzle.tileSize;
+                puzzleRow.mouseAttachOffsetX += puzzle.tileSize;
+            }
+            else if (puzzleRow.x > puzzle.tileSize*0.5)
+            {
+                puzzleRow.tiles[puzzleRow.tiles.length - 1].x -= (puzzle.tileSize + puzzle.spacing) * (puzzle.numCols - 1);
+                for (var colIndex = 0; colIndex < puzzleRow.tiles.length - 1; colIndex++)
+                {
+                    puzzleRow.tiles[colIndex].x += (puzzle.tileSize + puzzle.spacing);
+                }
+                puzzleRow.tiles.sort((a, b) => a.x - b.x);
+
+                puzzleRow.x -= puzzle.tileSize;
+                puzzleRow.mouseAttachOffsetX -= puzzle.tileSize;
+            }
         }
         else
         {
@@ -89,7 +112,7 @@ function getDesiredRowPos(rowIndex)
 {
     pos = {};
     pos.x = 0;
-    pos.y = rowIndex * (puzzle.tileSize + spacing);
+    pos.y = rowIndex * (puzzle.tileSize + puzzle.spacing);
 
     return pos;
 }
@@ -123,7 +146,7 @@ function onPuzzleRelease()
 
 function getRowIndexFromYPos(y)
 {
-    var rowIndex = Math.floor(((y + puzzle.tileSize*0.5) - puzzle.y) / (puzzle.tileSize + spacing));
+    var rowIndex = Math.floor(((y + puzzle.tileSize*0.5) - puzzle.y) / (puzzle.tileSize + puzzle.spacing));
     return Math.min(Math.max(rowIndex, 0), puzzle.numRows - 1);
 }
 
@@ -151,4 +174,5 @@ function setRowIndex(puzzleRow, desiredRowIndex)
     }
 
     puzzleRow.rowIndex = desiredRowIndex;
+    puzzle.rows.sort((a, b) => a.rowIndex - b.rowIndex);
 }
