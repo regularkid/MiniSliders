@@ -7,7 +7,8 @@ g.start();
 
 function onLoadComplete()
 {
-    g.canvas.style.backgroundColor = "gray";
+    g.canvas.style.backgroundColor = "rgb(79, 179, 225)";
+    g.interpolate = false;
 
     setState_Intro();
 }

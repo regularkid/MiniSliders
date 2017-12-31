@@ -13,120 +13,199 @@ var testPuzzle =
 ];
 
 var puzzle;
+var tweenFactor = 0.2;
 
 function createPuzzle()
 {
     puzzle = g.group();
-    puzzle.desiredPuzzleSize = g.canvas.width * 0.66;
-    puzzle.spacing = 2;
     puzzle.tileArray = testPuzzle;
     puzzle.numRows = puzzle.tileArray.length;
     puzzle.numCols = puzzle.tileArray[0].length;
-    puzzle.tileSize = puzzle.numRows > puzzle.numCols ? puzzle.desiredPuzzleSize / puzzle.numRows : puzzle.desiredPuzzleSize / puzzle.numCols;
+    puzzle.desiredPuzzleSize = g.canvas.width * 0.66;
+    puzzle.spacing = 5;
+    calculateTileSize();
+    puzzle.tileSizeOriginal = puzzle.tileSize;
     puzzle.xSize = (puzzle.numCols * puzzle.tileSize) + ((puzzle.numCols - 1) * puzzle.spacing);
     puzzle.ySize = (puzzle.numRows * puzzle.tileSize) + ((puzzle.numRows - 1) * puzzle.spacing);
     puzzle.x = (g.canvas.width - puzzle.xSize) / 2;
     puzzle.y = (g.canvas.height - puzzle.ySize) / 2;
-    puzzle.rows = [];
+    puzzle.solved = false;
 
-    for (var rowIndex = 0; rowIndex < puzzle.numRows; rowIndex++)
-    {
-        var puzzleRow = g.group();
-        puzzleRow.x = 0;
-        puzzleRow.y = rowIndex * (puzzle.tileSize + puzzle.spacing);
-        puzzleRow.isAttachedToMouse = false;
-        puzzleRow.rowIndex = rowIndex;
-        puzzleRow.ySize = puzzle.tileSize + puzzle.spacing;
-        puzzleRow.tiles = [];
-        puzzle.rows[rowIndex] = puzzleRow;
-        puzzle.addChild(puzzleRow);
-
-        for (var colIndex = 0; colIndex < puzzle.numCols; colIndex++)
-        {
-            var tileValue = puzzle.tileArray[rowIndex][colIndex];
-            var color = tileValue != 0 ? "black" : "white";
-            var x = colIndex * (puzzle.tileSize + puzzle.spacing);
-            var y = 0;
-
-            var tile = g.rectangle(puzzle.tileSize, puzzle.tileSize, color, "white", 0, x, y);
-            tile.tileValue = tileValue;
-            puzzleRow.tiles[colIndex] = tile;
-            puzzleRow.addChild(tile);
-        }
-    }
-
+    createRows();
     shufflePuzzle();
 
     g.pointer.press = onPuzzlePress;
     g.pointer.release = onPuzzleRelease;
 }
 
+function calculateTileSize()
+{
+    if (puzzle.numRows > puzzle.numCols)
+    {
+        var totalSpacing = puzzle.spacing * (puzzle.numRows - 1);
+        puzzle.tileSize = (puzzle.desiredPuzzleSize - totalSpacing) / puzzle.numRows;
+    }
+    else
+    {
+        var totalSpacing = puzzle.spacing * (puzzle.numCols - 1);
+        puzzle.tileSize = (puzzle.desiredPuzzleSize - totalSpacing) / puzzle.numCols;
+    }
+}
+
+function createRows()
+{
+    puzzle.rows = [];
+
+    for (var rowIndex = 0; rowIndex < puzzle.numRows; rowIndex++)
+    {
+        var row = g.group();
+        row.y = rowIndex * (puzzle.tileSize + puzzle.spacing);
+        row.ySize = puzzle.tileSize + puzzle.spacing;
+        row.isAttachedToMouse = false;
+        row.rowIndex = rowIndex;
+
+        puzzle.rows[rowIndex] = row;
+        puzzle.addChild(row);
+
+        createRowTiles(row);
+    }
+}
+
+function createRowTiles(row)
+{
+    row.tiles = [];
+
+    for (var colIndex = 0; colIndex < puzzle.numCols; colIndex++)
+    {
+        var tileValue = puzzle.tileArray[row.rowIndex][colIndex];
+        var color = tileValue != 0 ? "rgb(48, 48, 48)" : "rgb(255, 255, 255)";
+        var x = colIndex * (puzzle.tileSize + puzzle.spacing);
+        var y = 0;
+
+        var tile = g.rectangle(puzzle.tileSize, puzzle.tileSize, color, color, 0, x, y);
+        tile.tileValue = tileValue;
+        tile.shadowColor = "rgb(0,0,0)";
+        tile.shadowOffsetX = 3;
+        tile.shadowOffsetY = 3;
+        tile.shadowBlur = 0;
+
+        row.tiles[colIndex] = tile;
+        row.addChild(tile);
+    }
+}
+
 function updatePuzzle()
 {
-    puzzle.rows.forEach(function(puzzleRow)
+    puzzle.rows.forEach(function(row)
     {
-        if (puzzleRow.isAttachedToMouse)
+        if (row.isAttachedToMouse)
         {
-            puzzleRow.x = g.pointer.x + puzzleRow.mouseAttachOffsetX;
-            puzzleRow.y = g.pointer.y + puzzleRow.mouseAttachOffsetY;
+            row.x = g.pointer.x + row.mouseAttachOffsetX;
+            row.y = g.pointer.y + row.mouseAttachOffsetY;
             
-            var desiredRowIndex = getRowIndexFromYPos(puzzleRow.gy);
-            if (puzzleRow.rowIndex != desiredRowIndex)
+            var desiredRowIndex = getRowIndexFromYPos(row.gy);
+            if (row.rowIndex != desiredRowIndex)
             {
-                setRowIndex(puzzleRow, desiredRowIndex);
+                setRowIndex(row, desiredRowIndex);
             }
             
-            if (puzzleRow.x < -puzzle.tileSize*0.5)
+            if (row.x < -puzzle.tileSize*0.5)
             {
-                shiftRowRight(puzzleRow);
+                shiftRowRight(row);
             }
-            else if (puzzleRow.x > puzzle.tileSize*0.5)
+            else if (row.x > puzzle.tileSize*0.5)
             {
-                shiftRowLeft(puzzleRow);
+                shiftRowLeft(row);
             }
         }
         else
         {
-            desiredPos = getDesiredRowPos(puzzleRow.rowIndex);
-            puzzleRow.x += (desiredPos.x - puzzleRow.x) * 0.2;
-            puzzleRow.y += (desiredPos.y - puzzleRow.y) * 0.2;
+            var desiredPos = getDesiredRowPos(row.rowIndex);
+            row.x += (desiredPos.x - row.x) * tweenFactor;
+            row.y += (desiredPos.y - row.y) * tweenFactor;
+
+            for (var colIndex = 0; colIndex < puzzle.numCols; colIndex++)
+            {
+                var tile = row.tiles[colIndex];
+
+                desiredPos = getDesiredTilePos(colIndex);
+                tile.x += (desiredPos.x - tile.x) * tweenFactor;
+                tile.y += (desiredPos.y - tile.y) * tweenFactor;
+                tile.width += (puzzle.tileSize - tile.width) * tweenFactor;
+                tile.height += (puzzle.tileSize - tile.height) * tweenFactor;
+            }
         }
     });
+
+    var desiredPos = getDesiredPuzzlePos();
+    puzzle.x += (desiredPos.x - puzzle.x) * tweenFactor;
+    puzzle.y += (desiredPos.y - puzzle.y) * tweenFactor;
+}
+
+function getDesiredPuzzlePos()
+{
+    puzzle.xSize = (puzzle.numCols * puzzle.tileSize) + ((puzzle.numCols - 1) * puzzle.spacing);
+    puzzle.ySize = (puzzle.numRows * puzzle.tileSize) + ((puzzle.numRows - 1) * puzzle.spacing);
+
+    var pos = {};
+    pos.x = (g.canvas.width - puzzle.xSize) / 2;
+    pos.y = (g.canvas.height - puzzle.ySize) / 2;
+
+    return pos;
 }
 
 function getDesiredRowPos(rowIndex)
 {
-    pos = {};
+    var pos = {};
     pos.x = 0;
     pos.y = rowIndex * (puzzle.tileSize + puzzle.spacing);
 
     return pos;
 }
 
+function getDesiredTilePos(colIndex)
+{
+    var pos = {};
+    pos.x = colIndex * (puzzle.tileSize + puzzle.spacing);
+    pos.y = 0;
+
+    return pos;
+}
+
 function onPuzzlePress()
 {
-    puzzle.rows.forEach(function(puzzleRow)
+    puzzle.rows.forEach(function(row)
     {
-        if (g.pointer.x >= puzzleRow.gx && g.pointer.x < puzzleRow.gx + puzzle.xSize &&
-            g.pointer.y >= puzzleRow.gy && g.pointer.y < puzzleRow.gy + puzzleRow.ySize)
+        if (g.pointer.x >= row.gx && g.pointer.x < row.gx + puzzle.xSize &&
+            g.pointer.y >= row.gy && g.pointer.y < row.gy + row.ySize)
         {
-            puzzleRow.mouseAttachOffsetX = (puzzleRow.gx - g.pointer.x) - puzzle.x;
-            puzzleRow.mouseAttachOffsetY = (puzzleRow.gy - g.pointer.y) - puzzle.y;
-            puzzleRow.layer = 1;
-            puzzleRow.isAttachedToMouse = true;
+            row.mouseAttachOffsetX = (row.gx - g.pointer.x) - puzzle.x;
+            row.mouseAttachOffsetY = (row.gy - g.pointer.y) - puzzle.y;
+            row.layer = 1;
+            row.isAttachedToMouse = true;
+
+            row.tiles.forEach(function(tile)
+            {
+                tile.shadow = true;
+            });
         }
         else
         {
-            puzzleRow.layer = 0;
+            row.layer = 0;
         }
     });
 }
 
 function onPuzzleRelease()
 {
-    puzzle.rows.forEach(function(puzzleRow)
+    puzzle.rows.forEach(function(row)
     {
-        puzzleRow.isAttachedToMouse = false;
+        row.isAttachedToMouse = false;
+
+        row.tiles.forEach(function(tile)
+        {
+            tile.shadow = false;
+        });
     });
 
     checkIfSolved();
@@ -138,13 +217,13 @@ function getRowIndexFromYPos(y)
     return Math.min(Math.max(rowIndex, 0), puzzle.numRows - 1);
 }
 
-function setRowIndex(puzzleRow, desiredRowIndex)
+function setRowIndex(row, desiredRowIndex)
 {
-    if (puzzleRow.rowIndex > desiredRowIndex)
+    if (row.rowIndex > desiredRowIndex)
     {
         puzzle.rows.forEach(function(affectedPuzzleRow)
         {
-            if (affectedPuzzleRow.rowIndex >= desiredRowIndex && affectedPuzzleRow.rowIndex < puzzleRow.rowIndex)
+            if (affectedPuzzleRow.rowIndex >= desiredRowIndex && affectedPuzzleRow.rowIndex < row.rowIndex)
             {
                 affectedPuzzleRow.rowIndex++;
             }
@@ -154,41 +233,41 @@ function setRowIndex(puzzleRow, desiredRowIndex)
     {
         puzzle.rows.forEach(function(affectedPuzzleRow)
         {
-            if (affectedPuzzleRow.rowIndex <= desiredRowIndex && affectedPuzzleRow.rowIndex > puzzleRow.rowIndex)
+            if (affectedPuzzleRow.rowIndex <= desiredRowIndex && affectedPuzzleRow.rowIndex > row.rowIndex)
             {
                 affectedPuzzleRow.rowIndex--;
             }
         });
     }
 
-    puzzleRow.rowIndex = desiredRowIndex;
+    row.rowIndex = desiredRowIndex;
     puzzle.rows.sort((a, b) => a.rowIndex - b.rowIndex);
 }
 
-function shiftRowRight(puzzleRow)
+function shiftRowRight(row)
 {
-    puzzleRow.tiles[0].x += (puzzle.tileSize + puzzle.spacing) * (puzzle.numCols - 1);
-    for (var colIndex = 1; colIndex < puzzleRow.tiles.length; colIndex++)
+    row.tiles[0].x += (puzzle.tileSize + puzzle.spacing) * (puzzle.numCols - 1);
+    for (var colIndex = 1; colIndex < row.tiles.length; colIndex++)
     {
-        puzzleRow.tiles[colIndex].x -= (puzzle.tileSize + puzzle.spacing);
+        row.tiles[colIndex].x -= (puzzle.tileSize + puzzle.spacing);
     }
-    puzzleRow.tiles.sort((a, b) => a.x - b.x);
+    row.tiles.sort((a, b) => a.x - b.x);
 
-    puzzleRow.x += puzzle.tileSize;
-    puzzleRow.mouseAttachOffsetX += puzzle.tileSize;
+    row.x += puzzle.tileSize;
+    row.mouseAttachOffsetX += puzzle.tileSize;
 }
 
-function shiftRowLeft(puzzleRow)
+function shiftRowLeft(row)
 {
-    puzzleRow.tiles[puzzleRow.tiles.length - 1].x -= (puzzle.tileSize + puzzle.spacing) * (puzzle.numCols - 1);
-    for (var colIndex = 0; colIndex < puzzleRow.tiles.length - 1; colIndex++)
+    row.tiles[row.tiles.length - 1].x -= (puzzle.tileSize + puzzle.spacing) * (puzzle.numCols - 1);
+    for (var colIndex = 0; colIndex < row.tiles.length - 1; colIndex++)
     {
-        puzzleRow.tiles[colIndex].x += (puzzle.tileSize + puzzle.spacing);
+        row.tiles[colIndex].x += (puzzle.tileSize + puzzle.spacing);
     }
-    puzzleRow.tiles.sort((a, b) => a.x - b.x);
+    row.tiles.sort((a, b) => a.x - b.x);
 
-    puzzleRow.x -= puzzle.tileSize;
-    puzzleRow.mouseAttachOffsetX -= puzzle.tileSize;
+    row.x -= puzzle.tileSize;
+    row.mouseAttachOffsetX -= puzzle.tileSize;
 }
 
 function checkIfSolved()
@@ -201,33 +280,37 @@ function checkIfSolved()
             var solutionTileSet = puzzle.tileArray[rowIndex][colIndex] > 0;
             if (puzzleTileSet != solutionTileSet)
             {
-                console.log("Incorrect");
-                return false;
+                puzzle.solved = false;
+                puzzle.spacing = 5;
+                puzzle.tileSize = puzzle.tileSizeOriginal;
+                return;
             }
         }
     }
 
-    console.log("Solved!");
-    return true;
+    puzzle.solved = true;
+    puzzle.desiredPuzzleSize = g.canvas.width * 0.75;
+    puzzle.spacing = 0;
+    calculateTileSize();
 }
 
 function shufflePuzzle()
 {
-    puzzle.rows.forEach(function(puzzleRow)
+    puzzle.rows.forEach(function(row)
     {
-        setRowIndex(puzzleRow, Math.floor(Math.random() * (puzzle.numRows - 1)));
+        setRowIndex(row, Math.floor(Math.random() * (puzzle.numRows - 1)));
 
         var randomShiftAmount = Math.floor(Math.random() * (puzzle.numCols - 1));
         for (var i = 0; i < randomShiftAmount; i++)
         {
-            shiftRowRight(puzzleRow);
+            shiftRowRight(row);
         }
     });
 
-    puzzle.rows.forEach(function(puzzleRow)
+    puzzle.rows.forEach(function(row)
     {
-        desiredPos = getDesiredRowPos(puzzleRow.rowIndex);
-        puzzleRow.x = desiredPos.x;
-        puzzleRow.y = desiredPos.y;
+        desiredPos = getDesiredRowPos(row.rowIndex);
+        row.x = desiredPos.x;
+        row.y = desiredPos.y;
     });
 }
