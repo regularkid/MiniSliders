@@ -75,28 +75,12 @@ function updatePuzzle()
             }
             
             if (puzzleRow.x < -puzzle.tileSize*0.5)
-            {                
-                puzzleRow.tiles[0].x += (puzzle.tileSize + puzzle.spacing) * (puzzle.numCols - 1);
-                for (var colIndex = 1; colIndex < puzzleRow.tiles.length; colIndex++)
-                {
-                    puzzleRow.tiles[colIndex].x -= (puzzle.tileSize + puzzle.spacing);
-                }
-                puzzleRow.tiles.sort((a, b) => a.x - b.x);
-
-                puzzleRow.x += puzzle.tileSize;
-                puzzleRow.mouseAttachOffsetX += puzzle.tileSize;
+            {
+                shiftRowRight(puzzleRow);
             }
             else if (puzzleRow.x > puzzle.tileSize*0.5)
             {
-                puzzleRow.tiles[puzzleRow.tiles.length - 1].x -= (puzzle.tileSize + puzzle.spacing) * (puzzle.numCols - 1);
-                for (var colIndex = 0; colIndex < puzzleRow.tiles.length - 1; colIndex++)
-                {
-                    puzzleRow.tiles[colIndex].x += (puzzle.tileSize + puzzle.spacing);
-                }
-                puzzleRow.tiles.sort((a, b) => a.x - b.x);
-
-                puzzleRow.x -= puzzle.tileSize;
-                puzzleRow.mouseAttachOffsetX -= puzzle.tileSize;
+                shiftRowLeft(puzzleRow);
             }
         }
         else
@@ -142,6 +126,8 @@ function onPuzzleRelease()
     {
         puzzleRow.isAttachedToMouse = false;
     });
+
+    checkIfSolved();
 }
 
 function getRowIndexFromYPos(y)
@@ -175,4 +161,50 @@ function setRowIndex(puzzleRow, desiredRowIndex)
 
     puzzleRow.rowIndex = desiredRowIndex;
     puzzle.rows.sort((a, b) => a.rowIndex - b.rowIndex);
+}
+
+function shiftRowRight(puzzleRow)
+{
+    puzzleRow.tiles[0].x += (puzzle.tileSize + puzzle.spacing) * (puzzle.numCols - 1);
+    for (var colIndex = 1; colIndex < puzzleRow.tiles.length; colIndex++)
+    {
+        puzzleRow.tiles[colIndex].x -= (puzzle.tileSize + puzzle.spacing);
+    }
+    puzzleRow.tiles.sort((a, b) => a.x - b.x);
+
+    puzzleRow.x += puzzle.tileSize;
+    puzzleRow.mouseAttachOffsetX += puzzle.tileSize;
+}
+
+function shiftRowLeft(puzzleRow)
+{
+    puzzleRow.tiles[puzzleRow.tiles.length - 1].x -= (puzzle.tileSize + puzzle.spacing) * (puzzle.numCols - 1);
+    for (var colIndex = 0; colIndex < puzzleRow.tiles.length - 1; colIndex++)
+    {
+        puzzleRow.tiles[colIndex].x += (puzzle.tileSize + puzzle.spacing);
+    }
+    puzzleRow.tiles.sort((a, b) => a.x - b.x);
+
+    puzzleRow.x -= puzzle.tileSize;
+    puzzleRow.mouseAttachOffsetX -= puzzle.tileSize;
+}
+
+function checkIfSolved()
+{
+    for (var rowIndex = 0; rowIndex < puzzle.numRows; rowIndex++)
+    {
+        for (var colIndex = 0; colIndex < puzzle.numCols; colIndex++)
+        {
+            var puzzleTileSet = puzzle.rows[rowIndex].tiles[colIndex].tileValue > 0;
+            var solutionTileSet = puzzle.tileArray[rowIndex][colIndex] > 0;
+            if (puzzleTileSet != solutionTileSet)
+            {
+                console.log("Incorrect");
+                return false;
+            }
+        }
+    }
+
+    console.log("Solved!");
+    return true;
 }
