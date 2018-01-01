@@ -22,7 +22,7 @@ function getPuzzleHeight()
 
 function getTileSize()
 {
-    var desiredPuzzleSize = puzzle.solved ? g.canvas.width * 0.75 : g.canvas.width * 0.66;
+    var desiredPuzzleSize = puzzle.solved ? g.canvas.width * 0.72 : g.canvas.width * 0.66;
     var maxTilesSpan = getNumRows() > getNumCols() ? getNumRows() : getNumCols();
     var totalSpacing = getTileSpacing() * (maxTilesSpan - 1);
 

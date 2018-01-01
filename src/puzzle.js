@@ -7,8 +7,11 @@ function createPuzzle()
     puzzle.data = testPuzzle;
     puzzle.x = getDesiredPuzzlePos().x;
     puzzle.y = getDesiredPuzzlePos().y;
-
+    
     createRows();
+    createTitleText();
+    createInstructionsText();
+
     shufflePuzzle();
 
     g.pointer.press = onPuzzlePress;
@@ -53,6 +56,45 @@ function createTiles(row)
     }
 }
 
+function createTitleText()
+{
+    puzzle.titleText = g.text(puzzle.data.name, "50px upheavtt", "white", g.canvas.width / 2, 10);
+    puzzle.titleText.shadow = true;
+    puzzle.titleText.shadowColor = "black";
+    puzzle.titleText.shadowOffsetX = 2;
+    puzzle.titleText.shadowOffsetY = 2;
+    puzzle.titleText.shadowBlur = 0;
+    puzzle.titleText.textAlign = "center";
+}
+
+function createInstructionsText()
+{
+    puzzle.instructionsText = [];
+    puzzle.instructionsText[0] = g.text("Slide all directions to put", "25px upheavtt", "white", g.canvas.width / 2, g.canvas.height - 55);
+    puzzle.instructionsText[1] = g.text("the picture back together", "25px upheavtt", "white", g.canvas.width / 2, g.canvas.height - 35);
+
+    puzzle.instructionsText.forEach(function(text)
+    {
+        text.shadow = true;
+        text.shadowColor = "black";
+        text.shadowOffsetX = 2;
+        text.shadowOffsetY = 2;
+        text.shadowBlur = 0;
+        text.textAlign = "center";
+    });
+}
+
+function destroyPuzzle()
+{
+    puzzle.instructionsText.forEach(function(text)
+    {
+        g.remove(text);
+    });
+    g.remove(puzzle.titleText);
+    g.remove(puzzle);
+    puzzle = undefined;
+}
+
 function updatePuzzle()
 {
     puzzle.rows.forEach(function(row)
@@ -64,7 +106,7 @@ function updatePuzzle()
             
             if (row.rowIndex != getRowIndexFromYPos(row.gy))
             {
-                setRowIndex(row, getRowIndexFromYPos(row.gy));
+                setNewRowIndex(row, getRowIndexFromYPos(row.gy));
             }
             
             while (row.x < -getTileSize()*0.5)
@@ -98,21 +140,29 @@ function updatePuzzle()
 
 function onPuzzlePress()
 {
-    puzzle.rows.forEach(function(row)
+    if (puzzle.solved)
     {
-        if (isPointerOverRow(row))
+        destroyPuzzle();
+        createPuzzle();
+    }
+    else
+    {
+        puzzle.rows.forEach(function(row)
         {
-            row.layer = 1;
-            row.isAttachedToMouse = true;
-            row.mouseAttachOffsetX = (row.gx - g.pointer.x) - puzzle.x;
-            row.mouseAttachOffsetY = (row.gy - g.pointer.y) - puzzle.y;
-            showRowShadow(row, true);
-        }
-        else
-        {
-            row.layer = 0;
-        }
-    });
+            if (isPointerOverRow(row))
+            {
+                row.layer = 1;
+                row.isAttachedToMouse = true;
+                row.mouseAttachOffsetX = (row.gx - g.pointer.x) - puzzle.x;
+                row.mouseAttachOffsetY = (row.gy - g.pointer.y) - puzzle.y;
+                showRowShadow(row, true);
+            }
+            else
+            {
+                row.layer = 0;
+            }
+        });
+    }
 }
 
 function onPuzzleRelease()
@@ -126,7 +176,7 @@ function onPuzzleRelease()
     updateSolvedFlag();
 }
 
-function setRowIndex(row, newRowIndex)
+function setNewRowIndex(row, newRowIndex)
 {
     if (row.rowIndex > newRowIndex)
     {
@@ -184,7 +234,7 @@ function shufflePuzzle()
 {
     puzzle.rows.forEach(function(row)
     {
-        setRowIndex(row, Math.floor(Math.random() * (getNumRows() - 1)));
+        setNewRowIndex(row, Math.floor(Math.random() * (getNumRows() - 1)));
 
         var randomShiftAmount = Math.floor(Math.random() * (getNumCols() - 1));
         for (var i = 0; i < randomShiftAmount; i++)
