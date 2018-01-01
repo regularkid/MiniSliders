@@ -144,6 +144,7 @@ function onPuzzlePress()
     {
         destroyPuzzle();
         createPuzzle();
+        changeBackgroundColor();        
     }
     else
     {
