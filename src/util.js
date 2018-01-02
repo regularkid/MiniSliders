@@ -41,7 +41,9 @@ function getRowHeight()
 
 function getDesiredPuzzlePos()
 {
-    return {x: (g.canvas.width - getPuzzleWidth()) / 2, y: (g.canvas.height - getPuzzleHeight()) / 2};
+    // Note: using canvas width for y-pos as well becauase we pretend the canvas is perfectly square but actually
+    // give the canvas more height so we have a little room at the bottom for UI
+    return {x: (g.canvas.width - getPuzzleWidth()) / 2, y: (g.canvas.width - getPuzzleHeight()) / 2};
 }
 
 function getDesiredRowPos(rowIndex)
@@ -105,7 +107,28 @@ function getInitialTileColor(rowIndex, colIndex)
     return getSolutionTileValue(rowIndex, colIndex) != 0 ? "rgb(48, 48, 48)" : "rgb(255, 255, 255)";
 }
 
+function getSolutionTileColorRGB(rowIndex, colIndex)
+{
+    var tileValue = puzzle.data.tiles[rowIndex][colIndex];
+    var colorPalette = puzzle.data.colors;
+    return {r: colorPalette[tileValue].r, g: colorPalette[tileValue].g, b: colorPalette[tileValue].b};
+}
+
 function tweenTowardsValue(obj, valueName, desiredValue)
 {
     obj[valueName] += (desiredValue - obj[valueName]) * 0.2;
+}
+
+function centerTextObject(text)
+{
+    text.textAlign = "center";
+}
+
+function addShadowToTextObject(text)
+{
+    text.shadow = true;
+    text.shadowColor = "black";
+    text.shadowOffsetX = 2;
+    text.shadowOffsetY = 2;
+    text.shadowBlur = 0;
 }

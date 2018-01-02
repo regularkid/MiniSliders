@@ -1,12 +1,21 @@
+var puzzleDefaultColors =
+[
+    {r: 255, g: 255, b: 255},       // White
+    {r: 212, g: 12, b: 0},          // Red
+    {r: 255, g: 85, b: 0},          // Orange
+    {r: 255, g: 239, b: 0},         // Yellow
+    {r: 50, g: 193, b: 44},         // Green
+    {r: 82, g: 110, b: 255},        // Blue
+    {r: 104, g: 44, b: 191},        // Purple
+    {r: 124, g: 85, b: 71},         // Brown
+    {r: 120, g: 120, b: 120},       // Gray
+    {r: 35, g: 35, b: 35},          // Black
+];
+
 var testPuzzle =
 {
     name: "Donut",
-
-    color:
-    [
-        {r: 0, g: 0, b: 0},
-        {r: 255, g: 0, b: 0},
-    ],
+    colors: puzzleDefaultColors,
 
     tiles:
     [

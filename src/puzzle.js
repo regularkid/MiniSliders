@@ -10,7 +10,6 @@ function createPuzzle()
     
     createRows();
     createTitleText();
-    createInstructionsText();
 
     shufflePuzzle();
 
@@ -44,6 +43,8 @@ function createTiles(row)
     for (var colIndex = 0; colIndex < getNumCols(); colIndex++)
     {
         var color = getInitialTileColor(row.rowIndex, colIndex);
+        var solutionColor = getSolutionTileColorRGB(row.rowIndex, colIndex);
+        color = "rgb(" + solutionColor.r + ", " + solutionColor.g + ", " + solutionColor.b + ")";
         var tile = g.rectangle(getTileSize(), getTileSize(), color, color, 0, getDesiredTilePos(colIndex).x, getDesiredTilePos(colIndex).y);
         tile.tileValue = getSolutionTileValue(row.rowIndex, colIndex);
         tile.shadowColor = "black";
@@ -58,39 +59,19 @@ function createTiles(row)
 
 function createTitleText()
 {
-    puzzle.titleText = g.text(puzzle.data.name, "50px upheavtt", "white", g.canvas.width / 2, 10);
-    puzzle.titleText.shadow = true;
-    puzzle.titleText.shadowColor = "black";
-    puzzle.titleText.shadowOffsetX = 2;
-    puzzle.titleText.shadowOffsetY = 2;
-    puzzle.titleText.shadowBlur = 0;
-    puzzle.titleText.textAlign = "center";
-}
+    puzzle.titleText = g.text(puzzle.data.name, "50px upheavtt", "white", g.canvas.width / 2, 0);
+    addShadowToTextObject(puzzle.titleText);
+    centerTextObject(puzzle.titleText);
 
-function createInstructionsText()
-{
-    puzzle.instructionsText = [];
-    puzzle.instructionsText[0] = g.text("Slide all directions to put", "25px upheavtt", "white", g.canvas.width / 2, g.canvas.height - 55);
-    puzzle.instructionsText[1] = g.text("the picture back together", "25px upheavtt", "white", g.canvas.width / 2, g.canvas.height - 35);
-
-    puzzle.instructionsText.forEach(function(text)
-    {
-        text.shadow = true;
-        text.shadowColor = "black";
-        text.shadowOffsetX = 2;
-        text.shadowOffsetY = 2;
-        text.shadowBlur = 0;
-        text.textAlign = "center";
-    });
+    puzzle.modeText = g.text(easyMode ? "Easy Mode" : "Hard Mode", "20px upheavtt", "white", g.canvas.width / 2, 40);
+    addShadowToTextObject(puzzle.modeText);
+    centerTextObject(puzzle.modeText);
 }
 
 function destroyPuzzle()
 {
-    puzzle.instructionsText.forEach(function(text)
-    {
-        g.remove(text);
-    });
     g.remove(puzzle.titleText);
+    g.remove(puzzle.modeText);
     g.remove(puzzle);
     puzzle = undefined;
 }
@@ -144,7 +125,7 @@ function onPuzzlePress()
     {
         destroyPuzzle();
         createPuzzle();
-        changeBackgroundColor();        
+        changeBackgroundColor();
     }
     else
     {
