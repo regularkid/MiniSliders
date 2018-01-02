@@ -1,6 +1,6 @@
 # Mini Sliders
 
-Tiny, JavaScript version of a previous mobile game I made called "Sliders".
+Tiny, JavaScript version of a mobile game I made a couple of years ago called "Sliders".
 
 Play it here: http://supermicrofun.com/sliders/
 
