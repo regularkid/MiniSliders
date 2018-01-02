@@ -60,10 +60,12 @@ function createTiles(row)
 function createTitleText()
 {
     puzzle.titleText = g.text(puzzle.data.name, "50px upheavtt", "white", g.canvas.width / 2, 0);
+    puzzle.titleText.layer = 2;
     addShadowToTextObject(puzzle.titleText);
     centerTextObject(puzzle.titleText);
 
     puzzle.modeText = g.text(easyMode ? "Easy Mode" : "Hard Mode", "20px upheavtt", "white", g.canvas.width / 2, 40);
+    puzzle.modeText.layer = 2;
     addShadowToTextObject(puzzle.modeText);
     centerTextObject(puzzle.modeText);
 }

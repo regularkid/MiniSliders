@@ -46,6 +46,7 @@ function createInstructionsText()
     instructionsText[1] = g.text("the picture back together", "25px upheavtt", "white", g.canvas.width / 2, 445);
     instructionsText.forEach(function(text)
     {
+        text.layer = 2;
         centerTextObject(text);
         addShadowToTextObject(text);
     });
@@ -56,6 +57,7 @@ function createInstructionsText()
     controlsText[2] = g.text("S - Toggle Sound", "25px upheavtt", "white", 100, 530);
     controlsText.forEach(function(text)
     {
+        text.layer = 2;
         addShadowToTextObject(text);
     });
 }
