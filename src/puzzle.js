@@ -42,11 +42,12 @@ function createTiles(row)
 
     for (var colIndex = 0; colIndex < getNumCols(); colIndex++)
     {
-        var color = getInitialTileColor(row.rowIndex, colIndex);
-        var solutionColor = getSolutionTileColorRGB(row.rowIndex, colIndex);
-        color = "rgb(" + solutionColor.r + ", " + solutionColor.g + ", " + solutionColor.b + ")";
-        var tile = g.rectangle(getTileSize(), getTileSize(), color, color, 0, getDesiredTilePos(colIndex).x, getDesiredTilePos(colIndex).y);
-        tile.tileValue = getSolutionTileValue(row.rowIndex, colIndex);
+        var tileValue = getSolutionTileValue(row.rowIndex, colIndex);
+        var color = getDesiredTileColor(tileValue);
+        var colorStr = getColorString(color);
+        var tile = g.rectangle(getTileSize(), getTileSize(), colorStr, "none", 0, getDesiredTilePos(colIndex).x, getDesiredTilePos(colIndex).y);
+        tile.tileValue = tileValue;
+        tile.color = Object.assign({}, color);
         addShadowToObject(tile);
         tile.shadow = false;
 
@@ -113,6 +114,15 @@ function updatePuzzle()
                 tweenTowardsValue(tile, "height", getTileSize());
             });
         }
+
+        row.tiles.forEach(function(tile, index)
+        {
+            var color = getDesiredTileColor(tile.tileValue);
+            tweenTowardsValue(tile.color, "r", color.r);
+            tweenTowardsValue(tile.color, "g", color.g);
+            tweenTowardsValue(tile.color, "b", color.b);
+            tile.fillStyle = getColorString(tile.color);
+        });
     });
 
     tweenTowardsValue(puzzle, "x", getDesiredPuzzlePos().x);

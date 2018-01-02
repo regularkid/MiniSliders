@@ -111,16 +111,27 @@ function getPuzzleTileValue(rowIndex, colIndex)
     return puzzle.rows[rowIndex].tiles[colIndex].tileValue;
 }
 
-function getInitialTileColor(rowIndex, colIndex)
+function getDesiredTileColor(tileValue)
 {
-    return getSolutionTileValue(rowIndex, colIndex) != 0 ? "rgb(48, 48, 48)" : "rgb(255, 255, 255)";
+    var color = puzzle.data.colors[tileValue];
+    if (tileValue > 0)
+    {
+        if (puzzle.solved || easyMode)
+        {
+            return color;
+        }
+        else
+        {
+            return {r: 48, g: 48, b: 48};
+        }
+    }
+
+    return {r: 255, g: 255, b: 255};
 }
 
-function getSolutionTileColorRGB(rowIndex, colIndex)
+function getColorString(color)
 {
-    var tileValue = puzzle.data.tiles[rowIndex][colIndex];
-    var colorPalette = puzzle.data.colors;
-    return {r: colorPalette[tileValue].r, g: colorPalette[tileValue].g, b: colorPalette[tileValue].b};
+    return "rgb(" + Math.floor(color.r) + "," + Math.floor(color.g) + "," + Math.floor(color.b) + ")";
 }
 
 function tweenTowardsValue(obj, valueName, desiredValue)
