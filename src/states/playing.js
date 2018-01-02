@@ -48,7 +48,7 @@ function createInstructionsText()
     {
         text.layer = 2;
         centerTextObject(text);
-        addShadowToTextObject(text);
+        addShadowToObject(text);
     });
 
     var controlsText = [];
@@ -58,7 +58,7 @@ function createInstructionsText()
     controlsText.forEach(function(text)
     {
         text.layer = 2;
-        addShadowToTextObject(text);
+        addShadowToObject(text);
     });
 }
 
@@ -70,5 +70,5 @@ function toggleSound()
 function toggleMode()
 {
     easyMode = !easyMode;
-    puzzle.modeText.content = easyMode ? "Easy Mode" : "Hard Mode";
+    puzzle.modeText.content = getModeText();
 }

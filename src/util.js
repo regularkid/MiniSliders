@@ -68,6 +68,15 @@ function isPointerOverRow(row)
            g.pointer.y >= row.gy && g.pointer.y < row.gy + getRowHeight()
 }
 
+function addShadowToObject(obj)
+{
+    obj.shadow = true;
+    obj.shadowColor = "black";
+    obj.shadowOffsetX = 2;
+    obj.shadowOffsetY = 2;
+    obj.shadowBlur = 0;
+}
+
 function showRowShadow(row, show)
 {
     row.tiles.forEach(function(tile)
@@ -124,11 +133,19 @@ function centerTextObject(text)
     text.textAlign = "center";
 }
 
-function addShadowToTextObject(text)
+function getModeText()
 {
-    text.shadow = true;
-    text.shadowColor = "black";
-    text.shadowOffsetX = 2;
-    text.shadowOffsetY = 2;
-    text.shadowBlur = 0;
+    return easyMode ? "Easy Mode" : "Hard Mode";
+}
+
+var Layers =
+{
+    Bottom : 0,
+    Middle: 1,
+    Top : 2
+};
+
+function setRenderLayer(obj, layer)
+{
+    obj.layer = layer;    
 }

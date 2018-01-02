@@ -47,10 +47,8 @@ function createTiles(row)
         color = "rgb(" + solutionColor.r + ", " + solutionColor.g + ", " + solutionColor.b + ")";
         var tile = g.rectangle(getTileSize(), getTileSize(), color, color, 0, getDesiredTilePos(colIndex).x, getDesiredTilePos(colIndex).y);
         tile.tileValue = getSolutionTileValue(row.rowIndex, colIndex);
-        tile.shadowColor = "black";
-        tile.shadowOffsetX = 3;
-        tile.shadowOffsetY = 3;
-        tile.shadowBlur = 0;
+        addShadowToObject(tile);
+        tile.shadow = false;
 
         row.tiles[colIndex] = tile;
         row.addChild(tile);
@@ -60,13 +58,13 @@ function createTiles(row)
 function createTitleText()
 {
     puzzle.titleText = g.text(puzzle.data.name, "50px upheavtt", "white", g.canvas.width / 2, 0);
-    puzzle.titleText.layer = 2;
-    addShadowToTextObject(puzzle.titleText);
+    setRenderLayer(puzzle.titleText, Layers.Top);
+    addShadowToObject(puzzle.titleText);
     centerTextObject(puzzle.titleText);
 
-    puzzle.modeText = g.text(easyMode ? "Easy Mode" : "Hard Mode", "20px upheavtt", "white", g.canvas.width / 2, 40);
-    puzzle.modeText.layer = 2;
-    addShadowToTextObject(puzzle.modeText);
+    puzzle.modeText = g.text(getModeText(), "20px upheavtt", "white", g.canvas.width / 2, 40);
+    setRenderLayer(puzzle.modeText, Layers.Top);
+    addShadowToObject(puzzle.modeText);
     centerTextObject(puzzle.modeText);
 }
 
@@ -135,15 +133,15 @@ function onPuzzlePress()
         {
             if (isPointerOverRow(row))
             {
-                row.layer = 1;
                 row.isAttachedToMouse = true;
                 row.mouseAttachOffsetX = (row.gx - g.pointer.x) - puzzle.x;
                 row.mouseAttachOffsetY = (row.gy - g.pointer.y) - puzzle.y;
                 showRowShadow(row, true);
+                setRenderLayer(row, Layers.Middle);
             }
             else
             {
-                row.layer = 0;
+                setRenderLayer(row, Layers.Bottom);
             }
         });
     }
