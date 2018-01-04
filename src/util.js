@@ -111,14 +111,14 @@ function getPuzzleTileValue(rowIndex, colIndex)
     return puzzle.rows[rowIndex].tiles[colIndex].tileValue;
 }
 
-function getDesiredTileColor(tileValue)
+function getDesiredTileColor(rowIndex, colIndex)
 {
-    var color = puzzle.data.colors[tileValue];
+    var tileValue = puzzle.solved ? getSolutionTileValue(rowIndex, colIndex) : getPuzzleTileValue(rowIndex, colIndex);
     if (tileValue > 0)
     {
         if (puzzle.solved || easyMode)
         {
-            return color;
+            return puzzle.data.colors[tileValue];
         }
         else
         {
