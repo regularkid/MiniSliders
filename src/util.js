@@ -184,6 +184,16 @@ function increaseLevelIndex()
     setCookie("level", newLevelIndex.toString());
 }
 
+function decreaseLevelIndex()
+{
+    var newLevelIndex = getLevelIndex() - 1;
+    if (newLevelIndex < 0)
+    {
+        newLevelIndex = puzzles.length - 1;
+    }
+    setCookie("level", newLevelIndex.toString());
+}
+
 // Taken from: https://www.w3schools.com/js/js_cookies.asp
 function setCookie(cname, cvalue, exdays)
 {

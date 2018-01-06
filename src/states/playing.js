@@ -17,6 +17,21 @@ function setState_Playing()
     createInstructionsText();
     createPuzzle();
 
+    // DEBUG!
+    g.key.upArrow.press = function()
+    {
+        increaseLevelIndex();
+        destroyPuzzle();
+        createPuzzle();
+    };
+
+    g.key.downArrow.press = function()
+    {
+        decreaseLevelIndex();
+        destroyPuzzle();
+        createPuzzle();
+    };
+
     g.state = playing;
 }
 
