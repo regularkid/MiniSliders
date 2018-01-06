@@ -4,7 +4,7 @@ function createPuzzle()
 {
     puzzle = g.group();
     puzzle.solved = false;
-    puzzle.data = testPuzzle;
+    puzzle.data = puzzles[getLevelIndex()];
     puzzle.x = getDesiredPuzzlePos().x;
     puzzle.y = getDesiredPuzzlePos().y;
     
@@ -133,6 +133,7 @@ function onPuzzlePress()
 {
     if (puzzle.solved)
     {
+        increaseLevelIndex();
         destroyPuzzle();
         createPuzzle();
         changeBackgroundColor();

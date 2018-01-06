@@ -11,6 +11,7 @@ var backgroundColors =
 
 function setState_Playing()
 {
+    initLevelIndex();
     changeBackgroundColor();
     createKeyBindings();
     createInstructionsText();
