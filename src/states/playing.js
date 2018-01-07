@@ -64,12 +64,12 @@ function createInstructionsText()
     });
 
     var controlsText = [];
-    controlsText[0] = g.text("Mouse - Slide puzzle", "25px upheavtt", "white", 100, 490);
-    //controlsText[1] = g.text("LEFT / RIGHT - Toggle Hard Mode", "25px upheavtt", "white", 100, 510);
-    controlsText[1] = g.text("S - Toggle Sound", "25px upheavtt", "white", 100, 530);
+    controlsText[0] = g.text("Mouse - Slide puzzle", "25px upheavtt", "white", g.canvas.width / 2, 510);
+    controlsText[1] = g.text("S - Toggle Sound", "25px upheavtt", "white", g.canvas.width / 2, 530);
     controlsText.forEach(function(text)
     {
         setRenderLayer(text, Layers.Top);
+        centerTextObject(text);
         addShadowToObject(text);
     });
 }
