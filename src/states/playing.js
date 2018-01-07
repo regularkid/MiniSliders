@@ -1,4 +1,3 @@
-var easyMode = true;
 var backgroundColorIdx = -1;
 var backgroundColors =
 [
@@ -50,9 +49,6 @@ function createKeyBindings()
 {
     g.key.s = g.keyboard(83);
     g.key.s.press = toggleSound;
-
-    g.key.h = g.keyboard(72);
-    g.key.h.press = toggleMode;
 }
 
 function createInstructionsText()
@@ -69,8 +65,8 @@ function createInstructionsText()
 
     var controlsText = [];
     controlsText[0] = g.text("Mouse - Slide puzzle", "25px upheavtt", "white", 100, 490);
-    controlsText[1] = g.text("H - Toggle Hard Mode", "25px upheavtt", "white", 100, 510);
-    controlsText[2] = g.text("S - Toggle Sound", "25px upheavtt", "white", 100, 530);
+    //controlsText[1] = g.text("LEFT / RIGHT - Toggle Hard Mode", "25px upheavtt", "white", 100, 510);
+    controlsText[1] = g.text("S - Toggle Sound", "25px upheavtt", "white", 100, 530);
     controlsText.forEach(function(text)
     {
         setRenderLayer(text, Layers.Top);
@@ -81,10 +77,4 @@ function createInstructionsText()
 function toggleSound()
 {
 
-}
-
-function toggleMode()
-{
-    easyMode = !easyMode;
-    puzzle.modeText.content = getModeText();
 }

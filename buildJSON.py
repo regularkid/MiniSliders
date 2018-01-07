@@ -9,7 +9,6 @@ file.write("[\n")
 for root, dirs, files in os.walk("images"):
     for filename in files:
         colors = []
-        colors.append("{r: 255, g: 255, b: 255}")
         tiles = []
 
         image = Image.open("images/" + filename)

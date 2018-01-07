@@ -42,11 +42,10 @@ function createTiles(row)
 
     for (var colIndex = 0; colIndex < getNumCols(); colIndex++)
     {
-        var color = {r: 255, g: 255, b: 255};
-        var colorStr = getColorString(color);
+        var tileValue = getSolutionTileValue(row.rowIndex, colIndex);
+        var colorStr = getColorString(tileValue);
         var tile = g.rectangle(getTileSize(), getTileSize(), colorStr, colorStr, 0, getDesiredTilePos(colIndex).x, getDesiredTilePos(colIndex).y);
-        tile.tileValue = getSolutionTileValue(row.rowIndex, colIndex);
-        tile.color = Object.assign({}, color);
+        tile.tileValue = tileValue;
         addShadowToObject(tile);
         tile.shadow = false;
 
@@ -57,21 +56,15 @@ function createTiles(row)
 
 function createTitleText()
 {
-    puzzle.titleText = g.text(puzzle.data.name, "50px upheavtt", "white", g.canvas.width / 2, 0);
+    puzzle.titleText = g.text(puzzle.data.name, "50px upheavtt", "white", g.canvas.width / 2, 15);
     setRenderLayer(puzzle.titleText, Layers.Top);
     addShadowToObject(puzzle.titleText);
     centerTextObject(puzzle.titleText);
-
-    puzzle.modeText = g.text(getModeText(), "20px upheavtt", "white", g.canvas.width / 2, 40);
-    setRenderLayer(puzzle.modeText, Layers.Top);
-    addShadowToObject(puzzle.modeText);
-    centerTextObject(puzzle.modeText);
 }
 
 function destroyPuzzle()
 {
     g.remove(puzzle.titleText);
-    g.remove(puzzle.modeText);
     g.remove(puzzle);
     puzzle = undefined;
 }
@@ -113,16 +106,6 @@ function updatePuzzle()
                 tweenTowardsValue(tile, "height", getTileSize());
             });
         }
-
-        row.tiles.forEach(function(tile, colIndex)
-        {
-            var color = getDesiredTileColor(row.rowIndex, colIndex);
-            tweenTowardsValue(tile.color, "r", color.r);
-            tweenTowardsValue(tile.color, "g", color.g);
-            tweenTowardsValue(tile.color, "b", color.b);
-            tile.fillStyle = getColorString(tile.color);
-            tile.strokeStyle = getColorString(tile.color);
-        });
     });
 
     tweenTowardsValue(puzzle, "x", getDesiredPuzzlePos().x);
@@ -212,11 +195,8 @@ function updateSolvedFlag()
         {
             var puzzleValue = getPuzzleTileValue(rowIndex, colIndex);
             var solutionValue = getSolutionTileValue(rowIndex, colIndex);
-            var isPuzzleTileSet = puzzleValue > 0;
-            var isSolutionTileSet = solutionValue > 0;
 
-            if ((easyMode && puzzleValue != solutionValue) ||
-                (!easyMode && isPuzzleTileSet != isSolutionTileSet))
+            if (puzzleValue != solutionValue)
             {
                 puzzle.solved = false;
                 return;

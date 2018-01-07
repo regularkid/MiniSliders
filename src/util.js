@@ -111,26 +111,9 @@ function getPuzzleTileValue(rowIndex, colIndex)
     return puzzle.rows[rowIndex].tiles[colIndex].tileValue;
 }
 
-function getDesiredTileColor(rowIndex, colIndex)
+function getColorString(tileValue)
 {
-    var tileValue = puzzle.solved ? getSolutionTileValue(rowIndex, colIndex) : getPuzzleTileValue(rowIndex, colIndex);
-    if (tileValue > 0)
-    {
-        if (puzzle.solved || easyMode)
-        {
-            return puzzle.data.colors[tileValue];
-        }
-        else
-        {
-            return {r: 48, g: 48, b: 48};
-        }
-    }
-
-    return {r: 255, g: 255, b: 255};
-}
-
-function getColorString(color)
-{
+    var color = puzzle.data.colors[tileValue];
     return "rgb(" + Math.floor(color.r) + "," + Math.floor(color.g) + "," + Math.floor(color.b) + ")";
 }
 
@@ -142,11 +125,6 @@ function tweenTowardsValue(obj, valueName, desiredValue)
 function centerTextObject(text)
 {
     text.textAlign = "center";
-}
-
-function getModeText()
-{
-    return easyMode ? "Easy Mode" : "Hard Mode";
 }
 
 var Layers =
