@@ -20,14 +20,12 @@ for root, dirs, files in os.walk("images"):
                 g = pixels[x, y][1]
                 b = pixels[x, y][2]
                 a = pixels[x, y][3]
-                if a == 255:
-                    color = "{r: " + str(r) + ", g: " + str(g) + ", b: " + str(b) + "}"
-                    if color not in colors:
-                        colors.append(color)
-                    
-                    tiles[y].append(colors.index(color))
-                else:
-                    tiles[y].append("0")
+                
+                color = "{r: " + str(r) + ", g: " + str(g) + ", b: " + str(b) + "}"
+                if color not in colors:
+                    colors.append(color)
+                
+                tiles[y].append(colors.index(color))
 
         file.write("    {\n")
         file.write("        name: \"" + filename.split(".")[0] + "\",\n")

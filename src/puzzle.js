@@ -3,7 +3,7 @@ var puzzle;
 function createPuzzle()
 {
     puzzle = g.group();
-    puzzle.solved = false;
+    puzzle.solved = true;
     puzzle.data = puzzles[getLevelIndex()];
     puzzle.x = getDesiredPuzzlePos().x;
     puzzle.y = getDesiredPuzzlePos().y;
@@ -209,20 +209,25 @@ function updateSolvedFlag()
 
 function shufflePuzzle()
 {
-    puzzle.rows.forEach(function(row)
+    while (puzzle.solved)
     {
-        setNewRowIndex(row, Math.floor(Math.random() * (getNumRows() - 1)));
-
-        var randomShiftAmount = Math.floor(Math.random() * (getNumCols() - 1));
-        for (var i = 0; i < randomShiftAmount; i++)
+        puzzle.rows.forEach(function(row)
         {
-            shiftRowRight(row);
-        }
-    });
+            setNewRowIndex(row, Math.floor(Math.random() * (getNumRows() - 1)));
 
-    puzzle.rows.forEach(function(row)
-    {
-        row.x = getDesiredRowPos(row.rowIndex).x;
-        row.y = getDesiredRowPos(row.rowIndex).y;
-    });
+            var randomShiftAmount = Math.floor(Math.random() * (getNumCols() - 1));
+            for (var i = 0; i < randomShiftAmount; i++)
+            {
+                shiftRowRight(row);
+            }
+        });
+
+        puzzle.rows.forEach(function(row)
+        {
+            row.x = getDesiredRowPos(row.rowIndex).x;
+            row.y = getDesiredRowPos(row.rowIndex).y;
+        });
+
+        updateSolvedFlag();
+    }
 }
