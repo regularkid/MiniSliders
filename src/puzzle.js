@@ -18,6 +18,8 @@ function createPuzzle()
 
     g.pointer.press = onPuzzlePress;
     g.pointer.release = onPuzzleRelease;
+
+    playSound(newPuzzleSfx);
 }
 
 function createRows()
@@ -193,6 +195,8 @@ function setNewRowIndex(row, newRowIndex)
 
     row.rowIndex = newRowIndex;
     puzzle.rows.sort((a, b) => a.rowIndex - b.rowIndex);
+
+    playSound(swapRowSfx);
 }
 
 function shiftRowRight(row)
@@ -203,6 +207,8 @@ function shiftRowRight(row)
 
     row.x += getTileSize();
     row.mouseAttachOffsetX += getTileSize();
+
+    playSound(slideSquaresSfx);
 }
 
 function shiftRowLeft(row)
@@ -213,6 +219,8 @@ function shiftRowLeft(row)
 
     row.x -= getTileSize();
     row.mouseAttachOffsetX -= getTileSize();
+
+    playSound(slideSquaresSfx);
 }
 
 function updateSolvedFlag()
@@ -232,11 +240,15 @@ function updateSolvedFlag()
         }
     }
 
+    playSound(solvedSfx);
     puzzle.solved = true;
 }
 
 function shufflePuzzle()
 {
+    var soundOnSave = soundOn;
+    soundOn = false;
+    
     while (puzzle.solved)
     {
         puzzle.rows.forEach(function(row)
@@ -258,4 +270,6 @@ function shufflePuzzle()
 
         updateSolvedFlag();
     }
+
+    soundOn = soundOnSave;
 }

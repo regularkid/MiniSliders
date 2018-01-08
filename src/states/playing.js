@@ -1,3 +1,4 @@
+var soundOn = true;
 var easyMode = true;
 var backgroundColors =
 [
@@ -79,7 +80,7 @@ function createInstructionsText()
 
 function toggleSound()
 {
-
+    soundOn = !soundOn;
 }
 
 function toggleEasyMode()

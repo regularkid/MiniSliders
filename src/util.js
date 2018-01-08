@@ -201,3 +201,11 @@ function getCookie(cname)
     }
     return "";
 }
+
+function playSound(sound)
+{
+    if (soundOn)
+    {
+        sound.play();
+    }
+}
