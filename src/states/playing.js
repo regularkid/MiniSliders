@@ -1,18 +1,15 @@
 var easyMode = true;
-var backgroundColorIdx = -1;
 var backgroundColors =
 [
     "rgb(79, 128, 225)",    // Blue
     "rgb(57, 185, 75)",     // Green
     "rgb(151, 104, 209)",   // Purple
-    "rgb(243, 163, 70)",    // Orange
-    "rgb(255, 60, 60)",     // Red
 ];
 
 function setState_Playing()
 {
     initLevelIndex();
-    changeBackgroundColor();
+    updateBackgroundColor();
     createKeyBindings();
     createInstructionsText();
     createPuzzle();
@@ -23,6 +20,7 @@ function setState_Playing()
         increaseLevelIndex();
         destroyPuzzle();
         createPuzzle();
+        updateBackgroundColor();
     };
 
     g.key.downArrow.press = function()
@@ -30,6 +28,7 @@ function setState_Playing()
         decreaseLevelIndex();
         destroyPuzzle();
         createPuzzle();
+        updateBackgroundColor();
     };
 
     g.state = playing;
@@ -40,10 +39,9 @@ function playing()
     updatePuzzle();
 }
 
-function changeBackgroundColor()
+function updateBackgroundColor()
 {
-    backgroundColorIdx = (backgroundColorIdx + 1) % backgroundColors.length;
-    g.canvas.style.backgroundColor = backgroundColors[backgroundColorIdx];
+    g.canvas.style.backgroundColor = backgroundColors[getLevelIndex() % backgroundColors.length];
 }
 
 function createKeyBindings()

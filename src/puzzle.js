@@ -147,7 +147,7 @@ function onPuzzlePress()
         increaseLevelIndex();
         destroyPuzzle();
         createPuzzle();
-        changeBackgroundColor();
+        updateBackgroundColor();
     }
     else
     {
