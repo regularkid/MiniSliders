@@ -1,4 +1,5 @@
 var puzzle;
+var hint;
 
 function createPuzzle()
 {
@@ -10,6 +11,8 @@ function createPuzzle()
     
     createRows();
     createTitleText();
+
+    createHintImage();
 
     shufflePuzzle();
 
@@ -62,11 +65,34 @@ function createTitleText()
     centerTextObject(puzzle.titleText);
 }
 
+function createHintImage()
+{
+    var hintTileSize = 8;
+
+    hint = g.group();
+    for (var rowIndex = 0; rowIndex < getNumRows(); rowIndex++)
+    {
+        for (var colIndex = 0; colIndex < getNumCols(); colIndex++)
+        {
+            var tileValue = getSolutionTileValue(rowIndex, colIndex);
+            var colorStr = getColorString(tileValue);
+            var tile = g.rectangle(hintTileSize, hintTileSize, colorStr, colorStr, 0, colIndex * hintTileSize, rowIndex * hintTileSize);
+            hint.addChild(tile);
+        }
+    }
+
+    hint.x = (g.canvas.width - getNumCols()*hintTileSize) / 2;
+    hint.y = 65;
+}
+
 function destroyPuzzle()
 {
     g.remove(puzzle.titleText);
+    g.remove(hint);
     g.remove(puzzle);
+
     puzzle = undefined;
+    hint = undefined;
 }
 
 function updatePuzzle()
@@ -110,6 +136,8 @@ function updatePuzzle()
 
     tweenTowardsValue(puzzle, "x", getDesiredPuzzlePos().x);
     tweenTowardsValue(puzzle, "y", getDesiredPuzzlePos().y);
+
+    hint.visible = easyMode && !puzzle.solved;
 }
 
 function onPuzzlePress()

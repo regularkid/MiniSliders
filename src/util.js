@@ -42,8 +42,9 @@ function getRowHeight()
 function getDesiredPuzzlePos()
 {
     // Note: using canvas width for y-pos as well becauase we pretend the canvas is perfectly square but actually
-    // give the canvas more height so we have a little room at the bottom for UI
-    return {x: (g.canvas.width - getPuzzleWidth()) / 2, y: (g.canvas.width - getPuzzleHeight()) / 2};
+    // give the canvas more height so we have a little room at the bottom for UI. Also, add in vertical spacing for hint image.
+    var easyModeOffset = (easyMode && !puzzle.solved) ? 70 : 25;
+    return {x: (g.canvas.width - getPuzzleWidth()) / 2, y: ((g.canvas.width - getPuzzleHeight()) / 2) + easyModeOffset};
 }
 
 function getDesiredRowPos(rowIndex)

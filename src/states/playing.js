@@ -1,3 +1,4 @@
+var easyMode = true;
 var backgroundColorIdx = -1;
 var backgroundColors =
 [
@@ -49,13 +50,16 @@ function createKeyBindings()
 {
     g.key.s = g.keyboard(83);
     g.key.s.press = toggleSound;
+
+    g.key.h = g.keyboard(72);
+    g.key.h.press = toggleEasyMode;
 }
 
 function createInstructionsText()
 {
     var instructionsText = [];
-    instructionsText[0] = g.text("Slide all directions to put", "25px upheavtt", "white", g.canvas.width / 2, 425);
-    instructionsText[1] = g.text("the picture back together", "25px upheavtt", "white", g.canvas.width / 2, 445);
+    instructionsText[0] = g.text("Slide all directions to put", "25px upheavtt", "white", g.canvas.width / 2, 490);
+    instructionsText[1] = g.text("the picture back together", "25px upheavtt", "white", g.canvas.width / 2, 510);
     instructionsText.forEach(function(text)
     {
         setRenderLayer(text, Layers.Top);
@@ -64,8 +68,9 @@ function createInstructionsText()
     });
 
     var controlsText = [];
-    controlsText[0] = g.text("Mouse - Slide puzzle", "25px upheavtt", "white", g.canvas.width / 2, 510);
-    controlsText[1] = g.text("S - Toggle Sound", "25px upheavtt", "white", g.canvas.width / 2, 530);
+    controlsText[0] = g.text("Mouse - Slide puzzle", "25px upheavtt", "white", g.canvas.width / 2, 565);
+    controlsText[1] = g.text("H - Toggle Hint Image", "25px upheavtt", "white", g.canvas.width / 2, 585);
+    controlsText[2] = g.text("S - Toggle Sound", "25px upheavtt", "white", g.canvas.width / 2, 605);
     controlsText.forEach(function(text)
     {
         setRenderLayer(text, Layers.Top);
@@ -77,4 +82,9 @@ function createInstructionsText()
 function toggleSound()
 {
 
+}
+
+function toggleEasyMode()
+{
+    easyMode = !easyMode;
 }
